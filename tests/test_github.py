@@ -3,7 +3,6 @@
 import base64
 
 import httpx
-import pytest
 import respx
 
 from perditio.github import GitHubClient
