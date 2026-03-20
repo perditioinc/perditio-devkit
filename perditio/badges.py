@@ -8,8 +8,9 @@ from typing import Optional
 from urllib.parse import quote
 
 SUITE_COLORS = {
-    "Reporium": "6e40c9",
-    "Perditio": "e85d04",
+    "Reporium": "6e40c9",    # purple
+    "Perditio": "e85d04",    # orange
+    "Kim Loza": "0ea5e9",    # blue
 }
 
 BADGE_START = "<!-- perditio-badges-start -->"

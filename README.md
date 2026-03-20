@@ -1,5 +1,13 @@
 # perditio-devkit
 
+<!-- perditio-badges-start -->
+[![Tests](https://github.com/perditioinc/perditio-devkit/actions/workflows/test.yml/badge.svg)](https://github.com/perditioinc/perditio-devkit/actions/workflows/test.yml)
+![Last Commit](https://img.shields.io/github/last-commit/perditioinc/perditio-devkit)
+![License](https://img.shields.io/github/license/perditioinc/perditio-devkit)
+![python](https://img.shields.io/badge/python-3.11%2B-3776ab)
+![suite](https://img.shields.io/badge/suite-Perditio-e85d04)
+<!-- perditio-badges-end -->
+
 Shared tooling for all Perditio projects. Pip-installable. Used by every repo in the Reporium suite.
 
 ## Install
