@@ -20,7 +20,8 @@ BADGE_END = "<!-- perditio-badges-end -->"
 @dataclass
 class BadgeBlock:
     repo: str
-    workflow: Optional[str] = None
+    workflow: Optional[str] = None      # nightly/main workflow e.g. "sync.yml"
+    test_workflow: str = "test.yml"     # test workflow — always shown unless same as workflow
     suite: Optional[str] = None
     metrics: dict = field(default_factory=dict)
     python_version: str = "3.11+"
@@ -33,12 +34,19 @@ class BadgeBlock:
     def render(self) -> str:
         lines = [BADGE_START]
 
-        # Workflow badge
-        if self.workflow:
-            owner_repo = self.repo
+        # Test workflow badge — always included
+        # Uses GitHub Actions dynamic status badge (green/red based on last run)
+        test_wf = self.test_workflow
+        lines.append(
+            f"[![Tests](https://github.com/{self.repo}/actions/workflows/{test_wf}"
+            f"/badge.svg)](https://github.com/{self.repo}/actions/workflows/{test_wf})"
+        )
+
+        # Nightly workflow badge — only if different from test workflow
+        if self.workflow and self.workflow != self.test_workflow:
             lines.append(
-                f"[![Tests](https://github.com/{owner_repo}/actions/workflows/{self.workflow}"
-                f"/badge.svg)](https://github.com/{owner_repo}/actions/workflows/{self.workflow})"
+                f"[![Nightly](https://github.com/{self.repo}/actions/workflows/{self.workflow}"
+                f"/badge.svg)](https://github.com/{self.repo}/actions/workflows/{self.workflow})"
             )
 
         # Last commit
