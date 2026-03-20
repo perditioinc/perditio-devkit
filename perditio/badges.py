@@ -25,9 +25,9 @@ class BadgeBlock:
     python_version: str = "3.11+"
 
     def _shield(self, label: str, value: str, color: str) -> str:
-        l = quote(label, safe="")
-        v = quote(str(value), safe="")
-        return f"![{label}](https://img.shields.io/badge/{l}-{v}-{color})"
+        label_encoded = quote(label, safe="")
+        value_encoded = quote(str(value), safe="")
+        return f"![{label}](https://img.shields.io/badge/{label_encoded}-{value_encoded}-{color})"
 
     def render(self) -> str:
         lines = [BADGE_START]
