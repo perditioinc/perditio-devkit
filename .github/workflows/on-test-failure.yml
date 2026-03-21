@@ -1,0 +1,77 @@
+name: Create Issue On Test Failure (Reusable)
+
+on:
+  workflow_call:
+    inputs:
+      branch:
+        required: true
+        type: string
+      sha:
+        required: true
+        type: string
+      run_id:
+        required: true
+        type: string
+      repo:
+        required: true
+        type: string
+
+permissions:
+  issues: write
+
+jobs:
+  create-issue:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create bug issue for test failure
+        uses: actions/github-script@60a0d83039f74a4aee543508d2ffcb1c3799cdea
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const date = new Date().toISOString().split('T')[0];
+            const runUrl = `https://github.com/${{ inputs.repo }}/actions/runs/${{ inputs.run_id }}`;
+
+            // Check if an open issue already exists for this branch today
+            const existing = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'bug,automated',
+            });
+
+            const todayIssue = existing.data.find(issue =>
+              issue.title.includes(date) &&
+              issue.title.includes('${{ inputs.branch }}')
+            );
+
+            if (todayIssue) {
+              console.log(`Issue already exists for today: ${todayIssue.html_url}`);
+              return;
+            }
+
+            const issue = await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `Tests failing on ${{ inputs.branch }} — ${date}`,
+              body: [
+                '## Test Failure Detected',
+                '',
+                `**Branch:** \`${{ inputs.branch }}\``,
+                `**Commit:** \`${{ inputs.sha }}\``,
+                `**Workflow Run:** ${runUrl}`,
+                `**Date:** ${date}`,
+                '',
+                '## Action Required',
+                '1. Check the failing test run at the link above',
+                '2. Fix the failing tests locally: `pytest tests/ -v`',
+                '3. Push the fix to resolve this issue',
+                '4. Close this issue once tests are green',
+                '',
+                '---',
+                '*Created automatically by perditio-devkit on-test-failure workflow.*',
+                '*Will not duplicate for the same branch on the same day.*',
+              ].join('\n'),
+              labels: ['bug', 'automated'],
+            });
+
+            console.log(`Created issue: ${issue.data.html_url}`);
